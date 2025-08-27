@@ -1,0 +1,9 @@
+[project]
+name = "playing-cards"
+version = "0.1.0"
+description = "CLI for playing cards and reviewing game statistics"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pydealer>=1.4.0",
+]
