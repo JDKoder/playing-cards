@@ -14,84 +14,84 @@ SUIT_ICON = {
 }
 
 CARD_FACE = {
-    "2": """│         │
-│    x    │
-│         │
-│    x    │
-│         │""",
-    "3": """│         │
-│    x    │
-│    x    │
-│    x    │
-│         │""",
-    "4": """│         │
-│  x   x  │
-│         │
-│  x   x  │
-│         │""",
-    "5": """│         │
-│  x   x  │
-│    x    │
-│  x   x  │
-│         │""",
-    "6": """│         │
-│  x   x  │
-│  x   x  │
-│  x   x  │
-│         │""",
-    "7": """│         │
-│  x   x  │
-│  x x x  │
-│  x   x  │
-│         │""",
-    "8": """│         │
-│  x x x  │
-│  x x x  │
-│  x   x  │
-│         │""",
-    "9": """│         │
-│  x x x  │
-│  x x x  │
-│  x x x  │
-│         │""",
-    "10": """│         │
-│  x x x  │
-│  x x x  │
-│  x x x  │
-│    x    │""",
-    "Jack": """│         │
-│         │
-│    󰡘    │
-│    x    │
-│         │""",
-    "Queen": """│         │
-│         │
-│        │
-│    x    │
-│         │""",
-    "King": """│         │
-│         │
-│    󰆥    │
-│    x    │
-│         │""",
-    "Ace": """│         │
-│         │
-│    x    │
-│         │
-│         │""",
-    "Back": """║ 󰣏 󰋑 󰣑 󰣎 ║
-║ 󰣏 󰋑 󰣑 󰣎 ║
-║ 󰣏 󰋑 󰣑 󰣎 ║
-║ 󰣏 󰋑 󰣑 󰣎 ║
-║ 󰣏 󰋑 󰣑 󰣎 ║"""
+    "2": """│          │
+│    x     │
+│          │
+│    x     │
+│          │""",
+    "3": """│          │
+│    x     │
+│    x     │
+│    x     │
+│          │""",
+    "4": """│          │
+│  x   x   │
+│          │
+│  x   x   │
+│          │""",
+    "5": """│          │
+│  x   x   │
+│    x     │
+│  x   x   │
+│          │""",
+    "6": """│          │
+│  x   x   │
+│  x   x   │
+│  x   x   │
+│          │""",
+    "7": """│          │
+│  x   x   │
+│  x x x   │
+│  x   x   │
+│          │""",
+    "8": """│          │
+│  x x x   │
+│  x x x   │
+│  x   x   │
+│          │""",
+    "9": """│          │
+│  x x x   │
+│  x x x   │
+│  x x x   │
+│          │""",
+    "10": """│          │
+│  x x x   │
+│  x x x   │
+│  x x x   │
+│    x     │""",
+    "Jack": """│          │
+│          │
+│    󰡘     │
+│    x     │
+│          │""",
+    "Queen": """│          │
+│          │
+│         │
+│    x     │
+│          │""",
+    "King": """│          │
+│          │
+│    󰆥     │
+│    x     │
+│          │""",
+    "Ace": """│          │
+│          │
+│    x     │
+│          │
+│          │""",
+    "Back": """║ 󰣏 󰋑 󰣑 󰣎  ║
+║ 󰣏 󰋑 󰣑 󰣎  ║
+║ 󰣏 󰋑 󰣑 󰣎  ║
+║ 󰣏 󰋑 󰣑 󰣎  ║
+║ 󰣏 󰋑 󰣑 󰣎  ║"""
 
 }
 
-card_top = f"┌─────────┐"
-card_bottom = f"└─────────┘"
+card_top = f"┌──────────┐"
+card_bottom = f"└──────────┘"
 
-card_back_top = f"╔═════════╗"
-card_back_bottom = f"╚═════════╝"
+card_back_top = f"╔══════════╗"
+card_back_bottom = f"╚══════════╝"
 
 #todo: build back of card
 def build_card_string(value, suit):
@@ -110,20 +110,20 @@ def build_card_string(value, suit):
         card_str += f"{card_top}\n"
 
     if value == "10":
-        card_str += f"│ {rank}{icon}     │\n"
-    elif value == "Back":
-        card_str += f"║ 󰣏 󰋑 󰣑 󰣎 ║\n"
-    else:
         card_str += f"│ {rank}{icon}      │\n"
+    elif value == "Back":
+        card_str += f"║ 󰣏 󰋑 󰣑 󰣎  ║\n"
+    else:
+        card_str += f"│ {rank}{icon}       │\n"
 
     card_str += f"{face}\n"
 
     if value == "10":
-        card_str += f"│     {rank}{icon} │\n"
-    elif value == "Back":
-        card_str += f"║ 󰣏 󰋑 󰣑 󰣎 ║\n"
-    else:
         card_str += f"│      {rank}{icon} │\n"
+    elif value == "Back":
+        card_str += f"║ 󰣏 󰋑 󰣑 󰣎  ║\n"
+    else:
+        card_str += f"│       {rank}{icon} │\n"
 
     if value == "Back":
         card_str += card_back_bottom
@@ -136,7 +136,7 @@ def print_card(value, suit):
     card_string = build_card_string(value, suit)
     print(card_string)
 
-CARD_WIDTH=11
+CARD_WIDTH=12
 CARD_HEIGHT=9
 #takes a list of cards (tuples with value, and suit) and prints them side by side
 def print_cards(cards):
