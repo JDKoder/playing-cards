@@ -137,7 +137,9 @@ def print_card(value, suit, back=False):
         card_string = build_card_string(value, suit)
     print(card_string)
 
-#takes a list of cards (tuples with value, and suit) and prints them side by side
+"""Takes a list of cards and prints their ascii representations side by side in the terminal
+input: List of tuples eg. [("Ace", "Spades", False), ("Ace", "Hearts", True)]
+output: Cards side by side showing face if card[2] is False, or back if otherwise"""
 def print_cards(cards):
     #build cards strings and put them in a list
     card_strings = []

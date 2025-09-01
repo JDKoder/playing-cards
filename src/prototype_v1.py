@@ -2,28 +2,49 @@ import pydealer as pd
 from pydealer.const import POKER_RANKS
 from player import Player
 from rankdicts import HIGH_LOW_RANKS
+from card_ascii import print_cards
 
 
 """This is a prototype for high_low card game mechanics progress procedurally without user input."""
 def run_game():
-    #create the game deck preshuffled
-    deck = pd.Deck(rebuild=False, re_shuffle=True)
+    #initialize game variables
     round_count = 0
-    #Draw phase
-    #Create a player and a dealer that get 1 card each
+    player_hand = pd.Stack()
+    dealer_hand = pd.Stack()
+    discard_pile = pd.Stack()
+    player = Player(player_hand, 10)
+    dealer = Player(dealer_hand, 1000)
 
-    for i in range(26):
+    #for i in range(26):
+    while True:
+        #Round Update phase
+        deck = pd.Deck(rebuild=False, re_shuffle=True)
         round_count += 1
         print(f"Round {round_count}")
-        deck.shuffle()
+        for i in range(20):
+            deck.shuffle()
+        #Draw phase
         #draw a card for the player
         player_hand = deck.deal(1)
         print(f"Players card is {player_hand[0]}")
+
+        def convert_card_to_tuple(card, hidden=False):
+            card_tuple = (card.value, card.suit, hidden)
+            return card_tuple
+        
+        def show_hand(hand):
+            converted_cards = []
+            for i in range(hand.size):
+                converted_cards.append(convert_card_to_tuple(hand[i]))
+            print_cards(converted_cards)
+
+        player_card_tuple = convert_card_to_tuple(player_hand.cards[0])
+        print_cards([player_card_tuple])
         #draw a card for the dealer
         dealer_hand = deck.deal(1)
-
-        player = Player(player_hand, 10)
-        dealer = Player(dealer_hand, 1000)
+        print(f"Dealer draws a card face down")
+        dealer_card_tuple = convert_card_to_tuple(dealer_hand.cards[0], True)
+        print_cards([dealer_card_tuple])
 
         #Wager phase
         # player chooses the wager and the dealer matches, all credits go into the pot
@@ -40,29 +61,43 @@ def run_game():
         # Finalize Bet phase
         print(f"player wagers {player_wager}")
         pot += player.take_credits(player_wager)
-        print(f"dealer wagers {dealer_wager}")
+        print(f"dealer meets {dealer_wager}")
         pot += dealer.take_credits(dealer_wager)
 
         #player chooses a to bet "high" or "low"
         player_bet = "high"
         print(f"players bet is {player_bet}")
-        print(f"dealers card is {dealer.hand[0]}")
+        print(f"dealer shows their hand")
+        print(f"dealer's card is {dealer_hand[0]}")
+        show_hand(dealer_hand)
+
         #whose card is higher
-        if player.hand[0].gt(dealer.hand[0], HIGH_LOW_RANKS):
+        if player_hand[0].gt(dealer_hand[0], HIGH_LOW_RANKS):
             #player won
-            print(f"player wins! {player.hand[0]} is higher than {dealer.hand[0]}")
+            print(f"player wins! {player_hand[0]} is higher than {dealer_hand[0]}")
             print(f"Payout {pot}")
             player.award_credits(pot) 
-        elif player.hand[0].eq(dealer.hand[0], HIGH_LOW_RANKS):
+        elif player_hand[0].eq(dealer_hand[0], HIGH_LOW_RANKS):
             print(f"hands are equal.  That's a push!")
             print(f"Payout {player_wager}")
             player.award_credits(player_wager)
         else:
-            print(f"player loses! {player.hand[0]} is lower than {dealer.hand[0]}")
+            print(f"player loses! {player_hand[0]} is lower than {dealer_hand[0]}")
             dealer.award_credits(pot)
 
         print(f"Player's remaining credits: {player.credits}")
-        if player.credits < 10:
+        if player.credits < 10 or dealer.credits < 10:
             print(f"Not enough credits to play again.\n GAME OVER")
             break
+
+        print("Player discards hand")
+        discard_pile += player_hand.deal(1)
+        print("Dealer discards hand")
+        discard_pile += dealer_hand.deal(1)
+        print(f"Discard Pile Size {discard_pile.size}")
+        if discard_pile.size >= 52:
+            print("returning discard pile to main deck")
+            discard_pile.shuffle()
+            deck = discard_pile.deal(52)
+            print(f"{deck.size} cards returned from discard pile.")
         print("-----------------------------")
