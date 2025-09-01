@@ -6,6 +6,9 @@ icon_queen = ""
 icon_jack = "󰡘"
 icon_king = "󰆥"
 
+CARD_WIDTH=12
+CARD_HEIGHT=9
+
 SUIT_ICON = {
     "Diamonds":"󰣏",
     "Hearts":"󰋑",
@@ -134,8 +137,6 @@ def print_card(value, suit, back=False):
         card_string = build_card_string(value, suit)
     print(card_string)
 
-CARD_WIDTH=12
-CARD_HEIGHT=9
 #takes a list of cards (tuples with value, and suit) and prints them side by side
 def print_cards(cards):
     #build cards strings and put them in a list
@@ -153,14 +154,3 @@ def print_cards(cards):
             line_str += card_string[cursor_pos:cursor_pos+CARD_WIDTH]
         print(line_str)
 
-def test_print():
-    for rank in CARD_FACE.keys():
-        for suit in SUIT_ICON.keys():
-            is_back = False
-            if rank == "Back":
-                is_back = True
-            print_card(rank, suit, is_back)
-
-
-test_print()
-print_cards([("Ace", "Spades", False),("10","Clubs", False),("King", "Diamonds", True)])
