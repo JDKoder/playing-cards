@@ -6,7 +6,10 @@ from rankdicts import HIGH_LOW_RANKS
 from card_ascii import print_cards
 
 
-"""This is a prototype for high_low card game mechanics progress procedurally without user input."""
+BET_HIGH = "high"
+BET_LOW = "low"
+
+"""This is the high low game"""
 def run_game():
     #initialize game variables
     round_count = 0
