@@ -1,5 +1,5 @@
 HIGH_LOW_RANKS = { 
-        "Ace": 13,
+        "Ace High": 13,
         "King": 12,
         "Queen": 11,
         "Jack": 10,
@@ -12,7 +12,7 @@ HIGH_LOW_RANKS = {
         "4": 3,
         "3": 2,
         "2": 1,
-        "Joker": 0
+        "Ace Low": 0,
 }
 
 BLACKJACK_RANKS = { 

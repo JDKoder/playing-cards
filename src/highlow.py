@@ -61,6 +61,20 @@ def run_game():
         # if the dealer can't match, the wager must be the maximum left in the dealers account and the 
         # remainder is returned to the player's credits
         player_wager = 10
+        player_is_dipshit = True
+        while player_is_dipshit:
+            wager_input = input(f"Please place a bet in a denomination of 10 (you have {player.credits}): ")
+            wager_value = 0
+            try:
+                wager_value = int(wager_input)
+            except ValueError:
+                continue
+            if wager_value > player.credits:
+                continue
+            if wager_value > 0 and wager_value % 10 == 0:
+                player_is_dipshit = False
+                player_wager = wager_value
+
         dealer_wager = player_wager
         pot = 0
         if dealer.credits < player_wager:
@@ -76,10 +90,24 @@ def run_game():
 
         #player chooses a to bet "high" or "low"
         player_bet = "high"
-        print(f"players bet is {player_bet}")
+        player_is_dur_dur_dur = True
+        while player_is_dur_dur_dur:
+            high_low_input = input("Choose \'h\' for \'High\' or \'l\' for \'Low\'(h/l): ")
+            if not(high_low_input.lower() == 'h' or high_low_input.lower() == 'l'):
+                continue
+            match high_low_input.lower():
+                case 'h':
+                    player_bet = "high"
+                case 'l':
+                    player_bet = "low"
+                case _:
+                    continue
+            player_is_dur_dur_dur = False
+
+        print(f"Player's bet is {player_bet}")
         print(f"The Ace Standard Coin value is revealed: {ace_standard_coin}")
-        print(f"dealer shows their hand")
-        print(f"dealer's card is {dealer_hand[0]}")
+        print(f"Dealer shows their hand")
+        print(f"Dealer's card is {dealer_hand[0]}")
         show_hand(dealer_hand)
 
         #Finalize value of cards
@@ -89,18 +117,27 @@ def run_game():
            dealer_hand[0].value = "Ace " + ace_standard_coin
 
         #whose card is higher
-        if player_hand[0].gt(dealer_hand[0], HIGH_LOW_RANKS):
+        
+        if player_bet == "high" and player_hand[0].gt(dealer_hand[0], HIGH_LOW_RANKS):
             #player won
-            print(f"player wins! {player_hand[0].value} is higher than {dealer_hand[0].value}")
+            print(f"Player wins! {player_hand[0].value} is higher than {dealer_hand[0].value}")
             print(f"Payout {pot}")
             player.award_credits(pot) 
+        elif player_bet == "low" and player_hand[0].lt(dealer_hand[0], HIGH_LOW_RANKS):
+            #player won
+            print(f"Player wins! {player_hand[0].value} is lower than {dealer_hand[0].value}")
+            print(f"Payout {pot}")
+            player.award_credits(pot)
         elif player_hand[0].eq(dealer_hand[0], HIGH_LOW_RANKS):
             print(f"Hands are equal.  Push.")
             print(f"Payout {player_wager}")
             player.award_credits(player_wager)
             dealer.award_credits(dealer_wager)
         else:
-            print(f"player loses! {player_hand[0].value} is lower than {dealer_hand[0].value}")
+            str_val = "lower"
+            if (player_bet == "low"):
+                str_val = "higher"
+            print(f"Player loses! {player_hand[0].value} is {str_val} than {dealer_hand[0].value}")
             dealer.award_credits(pot)
 
         print(f"Player's remaining credits: {player.credits}")
@@ -118,7 +155,7 @@ def run_game():
         discard_pile += dealer_hand.deal(1)
         print(f"Discard Pile Size {discard_pile.size}")
         if discard_pile.size >= 52:
-            print("returning discard pile to main deck")
+            print("Last card has been played.  Returning the discard pile to main deck.")
             discard_pile.shuffle()
             deck = discard_pile.deal(52)
             print(f"{deck.size} cards returned from discard pile.")
