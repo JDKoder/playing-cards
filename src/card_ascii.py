@@ -1,3 +1,7 @@
+from rich.table import Table
+from rich.console import Console
+from rich.text import Text
+
 icon_spade = "󰣑"
 icon_club = "󰣎"
 icon_heart = "󰋑"
@@ -9,11 +13,30 @@ icon_king = "󰆥"
 CARD_WIDTH=12
 CARD_HEIGHT=9
 
+
+
 SUIT_ICON = {
     "Diamonds":"󰣏",
     "Hearts":"󰋑",
     "Spades":"󰣑",
     "Clubs":"󰣎"
+}
+
+SUIT_STYLE = {
+    "Diamonds": "red on white",
+    "Hearts": "red on white",
+    "Spades": "black on white",
+    "Clubs": "black on white"
+}
+
+ICON_RICH_TEXT = {
+    "Diamonds": Text(text=SUIT_ICON["Diamonds"], style=SUIT_STYLE["Diamonds"]),
+    "Hearts": Text(text=SUIT_ICON["Hearts"], style=SUIT_STYLE["Hearts"]),
+    "Spades": Text(text=SUIT_ICON["Spades"], style=SUIT_STYLE["Spades"]),
+    "Clubs": Text(text=SUIT_ICON["Clubs"], style=SUIT_STYLE["Clubs"]),
+    "King": Text(icon_king),
+    "Queen": Text(icon_queen),
+    "Jack": Text(icon_jack)
 }
 
 CARD_FACE = {
