@@ -1,7 +1,7 @@
 #protypes can implement run_game to test out new functionality to be run with main to simplify testing
 import sys
 import time
-from prototype_v1 import run_game as run_black_jack
+from blackjack import run_game as run_black_jack
 from highlow import run_game as run_high_low
 
 def print_delay(message="", delay=0, line_end="\n"):
@@ -47,6 +47,6 @@ We can play:
             run_high_low()
         case 2:
             print_delay("Blackjack!  I do love the classics!", 2)
-            run_blick_jack()
+            run_black_jack()
     print("Thank you for playing!")
 main()
