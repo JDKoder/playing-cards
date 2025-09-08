@@ -4,7 +4,7 @@ from pydealer.const import POKER_RANKS
 from player import Player
 from rankdicts import HIGH_LOW_RANKS
 from card_ascii import print_cards
-from rich_converter import (convert_rich_cards_to_grid,
+from card_rich import (convert_rich_cards_to_grid,
                             convert_face_to_rich_text, 
                             RICH_CARD_FACE)
 from console import console as c
