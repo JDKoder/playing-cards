@@ -4,6 +4,11 @@ from pydealer.const import POKER_RANKS
 from player import Player
 from rankdicts import HIGH_LOW_RANKS
 from card_ascii import print_cards
+from card_rich import (convert_rich_cards_to_grid,
+                            convert_face_to_rich_text, 
+                            RICH_CARD_FACE)
+from console import console as c
+from rich import print
 
 
 BET_HIGH = "high"
@@ -51,13 +56,16 @@ def run_game():
                 converted_cards.append(convert_card_to_tuple(hand[i]))
             print_cards(converted_cards)
 
-        player_card_tuple = convert_card_to_tuple(player_hand.cards[0])
-        print_cards([player_card_tuple])
+        #player_card_tuple = convert_card_to_tuple(player_hand.cards[0])
+        #print_cards([player_card_tuple])
+        players_card = convert_face_to_rich_text(RICH_CARD_FACE[player_hand.cards[0].value],player_hand.cards[0].suit)
+        c.print(players_card)
         #draw a card for the dealer
         dealer_hand = deck.deal(1)
         print(f"Dealer draws a card face down")
-        dealer_card_tuple = convert_card_to_tuple(dealer_hand.cards[0], True)
-        print_cards([dealer_card_tuple])
+        dealers_card = convert_face_to_rich_text(RICH_CARD_FACE[dealer_hand.cards[0].value],dealer_hand.cards[0].suit)
+        #dealer_card_tuple = convert_card_to_tuple(dealer_hand.cards[0], True)
+        c.print(convert_face_to_rich_text(RICH_CARD_FACE["Back"], "Back"))
 
         #Wager phase
         # player chooses the wager and the dealer matches, all credits go into the pot
@@ -111,7 +119,8 @@ def run_game():
         print(f"The Ace Standard Coin value is revealed: {ace_standard_coin}")
         print(f"Dealer shows their hand")
         print(f"Dealer's card is {dealer_hand[0]}")
-        show_hand(dealer_hand)
+        #show_hand(dealer_hand)
+        c.print(convert_rich_cards_to_grid([players_card, dealers_card]))
 
         #Finalize value of cards
         if player_hand[0].value == "Ace":
