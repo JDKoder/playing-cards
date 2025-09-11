@@ -9,6 +9,8 @@ from card_rich import (convert_rich_cards_to_grid,
                             RICH_CARD_FACE)
 from console import console as c
 from rich import print
+from rich.panel import Panel
+from rich.table import Table
 
 
 """This is the blackjack game"""
@@ -29,29 +31,6 @@ def run_game():
         print(f"Round {round_count}")
         for i in range(20):
             deck.shuffle()
-
-        #Deal phase
-        #Alternate drawing cards for the player and the dealer
-        player_hand += deck.deal(1)
-        print(f"Player is dealt {player_hand[0]}")
-        dealer_hand += deck.deal(1)
-        print(f"Dealer is dealt {dealer_hand[0]}")
-        player_hand += deck.deal(1)
-        print(f"Player is dealt {player_hand[1]}")
-        dealer_hand += deck.deal(1)
-        print(f"Dealer is dealt a face down card")
-
-        player_hand_display = []
-        player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[player_hand.cards[0].value],player_hand.cards[0].suit))
-        player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[player_hand.cards[1].value],player_hand.cards[1].suit))
-        c.print(convert_rich_cards_to_grid(player_hand_display))
-        #c.print(players_card)
-
-
-        dealer_hand_display = []
-        dealer_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[dealer_hand.cards[0].value],dealer_hand.cards[0].suit))
-        dealer_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE["Back"], "Back"))
-        c.print(convert_rich_cards_to_grid(dealer_hand_display))
         #Wager phase
         # player chooses the wager and the dealer matches, all credits go into the pot
         # if the dealer can't match, the wager must be the maximum left in the dealers account and the 
@@ -84,7 +63,45 @@ def run_game():
         print(f"dealer meets {dealer_wager}")
         pot += dealer.take_credits(dealer_wager)
 
-        #player chooses a to bet "high" or "low"
+
+        #Deal phase
+        #Alternate drawing cards for the player and the dealer
+        player_hand += deck.deal(1)
+        print(f"Player is dealt {player_hand[0]}")
+        dealer_hand += deck.deal(1)
+        print(f"Dealer is dealt {dealer_hand[0]}")
+        player_hand += deck.deal(1)
+        print(f"Player is dealt {player_hand[1]}")
+        dealer_hand += deck.deal(1)
+        print(f"Dealer is dealt a face down card")
+
+        player_hand_display = []
+        player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[player_hand.cards[0].value],player_hand.cards[0].suit))
+        player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[player_hand.cards[1].value],player_hand.cards[1].suit))
+        #c.print(convert_rich_cards_to_grid(player_hand_display))
+        players_hand_grid = convert_rich_cards_to_grid(player_hand_display)
+        #c.print(players_card)
+
+        COLOR_PALETTE = {
+            "lightgoldenrodyellow": "rgb(250,250,210)",
+            "darkgreen": "rgb(0,100,0)"
+        }
+        player_panel = Panel(players_hand_grid, title="Player", title_align="left", style=f"{COLOR_PALETTE['lightgoldenrodyellow']} on {COLOR_PALETTE['darkgreen']}")
+
+        dealer_hand_display = []
+        dealer_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[dealer_hand.cards[0].value],dealer_hand.cards[0].suit))
+        dealer_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE["Back"], "Back"))
+        dealers_hand_grid = convert_rich_cards_to_grid(dealer_hand_display)
+ 
+        dealer_panel = Panel(dealers_hand_grid, title="Dealer", title_align="left", style=f"{COLOR_PALETTE['lightgoldenrodyellow']} on {COLOR_PALETTE['darkgreen']}")
+
+        table_grid = Table.grid(expand=True)
+        table_grid.add_column()
+        table_grid.add_column()
+        table_grid.add_row(player_panel, dealer_panel)
+        c.print(table_grid)
+
+                        #player chooses a to bet "high" or "low"
         player_bet = "high"
         player_is_dur_dur_dur = True
         while player_is_dur_dur_dur:
