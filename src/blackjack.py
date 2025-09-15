@@ -1,9 +1,7 @@
 import random as r
 import pydealer as pd
-from pydealer.const import POKER_RANKS
 from player import Player
 from rankdicts import BLACKJACK_RANKS
-from card_ascii import print_cards
 from card_rich import (convert_rich_cards_to_grid,
                             convert_face_to_rich_text, 
                             RICH_CARD_FACE)
@@ -11,6 +9,7 @@ from console import console as c
 from rich import print
 from rich.panel import Panel
 from rich.table import Table
+from rich.text import Text
 
 
 """This is the blackjack game"""
@@ -95,64 +94,47 @@ def run_game():
  
         dealer_panel = Panel(dealers_hand_grid, title="Dealer", title_align="left", style=f"{COLOR_PALETTE['lightgoldenrodyellow']} on {COLOR_PALETTE['darkgreen']}")
 
+        """ Input: List of Card
+            Return: Integer value of all cards combined
+            
+            Totals the value of the cards in the hand.
+            reduce aces to lowest value (1) if the hand would lose otherwise
+            """
+        def get_hand_value(cards):
+            total = 0
+            ace_count = 0
+            for card in cards:
+                if card.value == "Ace":
+                    ace_count += 1
+                total += BLACKJACK_RANKS[card.value]
+            #reduce aces to lowest value if the hand would lose otherwise
+            while total > 21 and ace_count > 0:
+                total -= 10
+                ace_count -= 1
+            return total
+
+
+        player_hand_value = get_hand_value(player_hand)
+        dealer_hand_value = get_hand_value([dealer_hand.cards[0]])
+        
+        stats = f"Player Hand: {player_hand_value}\nDealer Hand: {dealer_hand_value}"
+        stats_panel = Panel(Text(stats), title=f"Game {round}")
+
         table_grid = Table.grid(expand=True)
         table_grid.add_column()
         table_grid.add_column()
-        table_grid.add_row(player_panel, dealer_panel)
+        table_grid.add_column()
+        table_grid.add_row(player_panel, dealer_panel, stats_panel)
         c.print(table_grid)
 
-                        #player chooses a to bet "high" or "low"
-        player_bet = "high"
-        player_is_dur_dur_dur = True
-        while player_is_dur_dur_dur:
-            high_low_input = input("Choose \'h\' for \'High\' or \'l\' for \'Low\'(h/l): ")
-            if not(high_low_input.lower() == 'h' or high_low_input.lower() == 'l'):
-                continue
-            match high_low_input.lower():
-                case 'h':
-                    player_bet = "high"
-                case 'l':
-                    player_bet = "low"
-                case _:
-                    continue
-            player_is_dur_dur_dur = False
-
-        print(f"Player's bet is {player_bet}")
-        print(f"The Ace Standard Coin value is revealed: {ace_standard_coin}")
-        print(f"Dealer shows their hand")
-        print(f"Dealer's card is {dealer_hand[0]}")
-        c.print(convert_rich_cards_to_grid([players_card, dealers_card]))
-
-        #Finalize value of cards
-        if player_hand[0].value == "Ace":
-           player_hand[0].value = "Ace " + ace_standard_coin
-        if dealer_hand[0].value == "Ace":
-           dealer_hand[0].value = "Ace " + ace_standard_coin
-
-        #whose card is higher
+        #Hit or Stay
+        #TODO IMPLEMENT HIT STAY LOOP
         
-        if player_bet == "high" and player_hand[0].gt(dealer_hand[0], HIGH_LOW_RANKS):
-            #player won
-            print(f"Player wins! {player_hand[0].value} is higher than {dealer_hand[0].value}")
-            print(f"Payout {pot}")
-            player.award_credits(pot) 
-        elif player_bet == "low" and player_hand[0].lt(dealer_hand[0], HIGH_LOW_RANKS):
-            #player won
-            print(f"Player wins! {player_hand[0].value} is lower than {dealer_hand[0].value}")
-            print(f"Payout {pot}")
-            player.award_credits(pot)
-        elif player_hand[0].eq(dealer_hand[0], HIGH_LOW_RANKS):
-            print(f"Hands are equal.  Push.")
-            print(f"Payout {player_wager}")
-            player.award_credits(player_wager)
-            dealer.award_credits(dealer_wager)
-        else:
-            str_val = "lower"
-            if (player_bet == "low"):
-                str_val = "higher"
-            print(f"Player loses! {player_hand[0].value} is {str_val} than {dealer_hand[0].value}")
-            dealer.award_credits(pot)
 
+        #Dealer Flips and hits to at least 16
+
+
+        #Can Play Again?
         print(f"Player's remaining credits: {player.credits}")
         if player.credits < 10 or dealer.credits < 10:
             print(f"Not enough credits to play again.")
@@ -161,15 +143,4 @@ def run_game():
             else:
                 print("You're broke!  Game Over")
             break
-
-        print("Player discards hand")
-        discard_pile += player_hand.deal(1)
-        print("Dealer discards hand")
-        discard_pile += dealer_hand.deal(1)
-        print(f"Discard Pile Size {discard_pile.size}")
-        if discard_pile.size >= 52:
-            print("Last card has been played.  Returning the discard pile to main deck.")
-            discard_pile.shuffle()
-            deck = discard_pile.deal(52)
-            print(f"{deck.size} cards returned from discard pile.")
-        print("-----------------------------")
+        
