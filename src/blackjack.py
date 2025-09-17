@@ -139,12 +139,13 @@ def run_game():
             hit_choices = ["hit", "h"]
             stay_choices = ["stay", "s"]
             hit_stay_choices = hit_choices.append(stay_choices)
-            command = Prompt.ask(Text("Hit (").append(" h ", style="red on blue").append(") or Stay (").append(" s ", style="red_on_blue").append("): "), choices=hit_stay_choices, case_sensitive=False)
+            command = Prompt.ask(Text("Hit (").append(" h ", style="red on blue").append(") or Stay (").append(" s ", style="red on blue").append(")"), choices=hit_stay_choices, case_sensitive=False)
             
             if command.lower() in hit_choices:
                 command = "h"
                 player_hand += deck.deal(1)
-                update_panels(False)
+                c.print(f"Player draws the {player_hand[len(player_hand)-1]}")
+                update_panels(True)
             elif command.lower() in stay_choices:
                 command = "s"
 
