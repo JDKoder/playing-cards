@@ -10,6 +10,7 @@ from rich import print
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
+from rich.prompt import Prompt
 
 
 """This is the blackjack game"""
@@ -74,25 +75,31 @@ def run_game():
         dealer_hand += deck.deal(1)
         print(f"Dealer is dealt a face down card")
 
-        player_hand_display = []
-        player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[player_hand.cards[0].value],player_hand.cards[0].suit))
-        player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[player_hand.cards[1].value],player_hand.cards[1].suit))
-        #c.print(convert_rich_cards_to_grid(player_hand_display))
-        players_hand_grid = convert_rich_cards_to_grid(player_hand_display)
-        #c.print(players_card)
+
+        def hand_to_display_grid(title, cards, hide=False):
+            player_hand_display = []
+            for i in range(len(cards)):
+                if i > 0 and hide:
+                    player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE["Back"], "Back"))
+                else:
+                    player_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[cards[i].value],cards[i].suit))
+            return convert_rich_cards_to_grid(player_hand_display)
 
         COLOR_PALETTE = {
             "lightgoldenrodyellow": "rgb(250,250,210)",
             "darkgreen": "rgb(0,100,0)"
         }
-        player_panel = Panel(players_hand_grid, title="Player", title_align="left", style=f"{COLOR_PALETTE['lightgoldenrodyellow']} on {COLOR_PALETTE['darkgreen']}")
+        player_panel = None
+        dealer_panel = None
+        def update_panels(dealer_hides=False):
+            nonlocal player_panel
+            nonlocal dealer_panel
+            players_hand_grid = hand_to_display_grid("Player", player_hand.cards)
+            dealers_hand_grid = hand_to_display_grid("Dealer", dealer_hand.cards, dealer_hides)
+            player_panel = Panel(players_hand_grid, title="Player", title_align="left", style=f"{COLOR_PALETTE['lightgoldenrodyellow']} on {COLOR_PALETTE['darkgreen']}")
+            dealer_panel = Panel(dealers_hand_grid, title="Dealer", title_align="left", style=f"{COLOR_PALETTE['lightgoldenrodyellow']} on {COLOR_PALETTE['darkgreen']}")
 
-        dealer_hand_display = []
-        dealer_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE[dealer_hand.cards[0].value],dealer_hand.cards[0].suit))
-        dealer_hand_display.append(convert_face_to_rich_text(RICH_CARD_FACE["Back"], "Back"))
-        dealers_hand_grid = convert_rich_cards_to_grid(dealer_hand_display)
- 
-        dealer_panel = Panel(dealers_hand_grid, title="Dealer", title_align="left", style=f"{COLOR_PALETTE['lightgoldenrodyellow']} on {COLOR_PALETTE['darkgreen']}")
+        update_panels(True)
 
         """ Input: List of Card
             Return: Integer value of all cards combined
@@ -113,23 +120,36 @@ def run_game():
                 ace_count -= 1
             return total
 
+        while True:
+            player_hand_value = get_hand_value(player_hand)
+            dealer_hand_value = get_hand_value([dealer_hand.cards[0]])
+            
+            stats = f"Player Hand: {player_hand_value}\nDealer Hand: {dealer_hand_value}"
+            stats_panel = Panel(Text(stats), title=f"Game {round_count}")
 
-        player_hand_value = get_hand_value(player_hand)
-        dealer_hand_value = get_hand_value([dealer_hand.cards[0]])
-        
-        stats = f"Player Hand: {player_hand_value}\nDealer Hand: {dealer_hand_value}"
-        stats_panel = Panel(Text(stats), title=f"Game {round}")
+            table_grid = Table.grid(expand=True)
+            table_grid.add_column()
+            table_grid.add_column()
+            table_grid.add_column()
+            table_grid.add_row(player_panel, dealer_panel, stats_panel)
+            c.print(table_grid)
 
-        table_grid = Table.grid(expand=True)
-        table_grid.add_column()
-        table_grid.add_column()
-        table_grid.add_column()
-        table_grid.add_row(player_panel, dealer_panel, stats_panel)
-        c.print(table_grid)
+            #Hit or Stay
+            #TODO IMPLEMENT HIT STAY LOOP
+            hit_choices = ["hit", "h"]
+            stay_choices = ["stay", "s"]
+            hit_stay_choices = hit_choices.append(stay_choices)
+            command = Prompt.ask(Text("Hit (").append(" h ", style="red on blue").append(") or Stay (").append(" s ", style="red_on_blue").append("): "), choices=hit_stay_choices, case_sensitive=False)
+            
+            if command.lower() in hit_choices:
+                command = "h"
+                player_hand += deck.deal(1)
+                update_panels(False)
+            elif command.lower() in stay_choices:
+                command = "s"
 
-        #Hit or Stay
-        #TODO IMPLEMENT HIT STAY LOOP
-        
+
+            
 
         #Dealer Flips and hits to at least 16
 
