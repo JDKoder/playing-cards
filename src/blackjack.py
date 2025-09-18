@@ -120,10 +120,12 @@ def run_game():
                 ace_count -= 1
             return total
 
-        while True:
+        def update_ui(player_hand, dealer_hand):
+            nonlocal round_count
+            nonlocal player_panel
+            nonlocal dealer_panel
             player_hand_value = get_hand_value(player_hand)
-            dealer_hand_value = get_hand_value([dealer_hand.cards[0]])
-            
+            dealer_hand_value = get_hand_value(dealer_hand)
             stats = f"Player Hand: {player_hand_value}\nDealer Hand: {dealer_hand_value}"
             stats_panel = Panel(Text(stats), title=f"Game {round_count}")
 
@@ -134,6 +136,9 @@ def run_game():
             table_grid.add_row(player_panel, dealer_panel, stats_panel)
             c.print(table_grid)
 
+        while True:
+            update_ui(player_hand, [dealer_hand.cards[0]])
+
             #Hit or Stay
             #TODO IMPLEMENT HIT STAY LOOP
             hit_choices = ["hit", "h"]
@@ -142,17 +147,48 @@ def run_game():
             command = Prompt.ask(Text("Hit (").append(" h ", style="red on blue").append(") or Stay (").append(" s ", style="red on blue").append(")"), choices=hit_stay_choices, case_sensitive=False)
             
             if command.lower() in hit_choices:
-                command = "h"
                 player_hand += deck.deal(1)
                 c.print(f"Player draws the {player_hand[len(player_hand)-1]}")
                 update_panels(True)
+                if get_hand_value(player_hand) > 21:
+                # Player loses
+                    c.print("Hand is more than 21!")
+                    break
             elif command.lower() in stay_choices:
-                command = "s"
+                update_panels(False)
+                c.print("Player stays")
+                c.print("Dealer shows their hand")
+                update_ui(player_hand, dealer_hand)
+                break
 
+        dealer_hand_value = get_hand_value(dealer_hand)
+        player_hand_value = get_hand_value(player_hand)
+        #Dealer draws to at least 16 while they are losing to the player.
+        while dealer_hand_value < 16 and player_hand_value > dealer_hand_value and player_hand_value <= 21:
+            c.print("Dealer hits")
+            dealer_hand += deck.deal(1)
+            c.print(f"Dealer draws the {dealer_hand[len(dealer_hand)-1]}")
+            dealer_hand_value = get_hand_value(dealer_hand)
+            update_panels(False)
+            update_ui(player_hand, dealer_hand)
 
-            
-
-        #Dealer Flips and hits to at least 16
+        #Check win conditions
+        player_over = player_hand_value > 21
+        if player_over:
+            c.print("[bold red]Player Loses!  Your hand was over 21[/bold red]")
+        elif player_hand_value == dealer_hand_value:
+            # push
+            c.print("[bold]Push! Wager is returned.[/bold]")
+            player.credits += player_wager
+            dealer.credits += dealer_wager
+        elif player_hand_value > dealer_hand_value or dealer_hand_value > 21:
+            # Player Wins
+            c.print("[bold green]Player wins the round[/bold green]")
+            player.credits += pot
+        elif player_hand_value < dealer_hand_value:
+            # Player Loses
+            c.print("[bold]Player Loses!  Your hand was beaten.[/bold]")
+            dealer.credits += pot
 
 
         #Can Play Again?
@@ -160,8 +196,16 @@ def run_game():
         if player.credits < 10 or dealer.credits < 10:
             print(f"Not enough credits to play again.")
             if player.credits >= 10:
-                print("Player Takes the House!")
+                c.print("[bold yellow on black]Player Takes the House![/bold yellow on black]")
             else:
-                print("You're broke!  Game Over")
+                c.print("[bold white on red]You're broke!  Game Over[/bold white on red]")
             break
-        
+        else:
+            print(f"Player discards {len(player_hand)} cards from hand")
+            discard_pile += player_hand.deal(len(player_hand))
+            print(f"Dealer discards {len(dealer_hand)} hand")
+            discard_pile += dealer_hand.deal(len(dealer_hand))
+            print("Shuffling and Returning the discard pile to main deck.")
+            discard_pile.shuffle()
+            deck += discard_pile.deal(len(discard_pile))
+            print(f"{deck.size} cards ready for the next game.")
