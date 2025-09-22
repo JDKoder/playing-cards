@@ -3,8 +3,9 @@
 Playing Cards is a pet project for bringing playing cards to the terminal.  
 
 # Choice of Games
-** high - low
-** blackjack
+
+* high - low
+* blackjack
 
 # Requirements
 
