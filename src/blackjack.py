@@ -10,7 +10,7 @@ from rich import print
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm
 
 
 """This is the blackjack game"""
@@ -212,3 +212,10 @@ def run_game():
             discard_pile.shuffle()
             deck += discard_pile.deal(len(discard_pile))
             print(f"{deck.size} cards ready for the next game.")
+        play_again = Confirm.ask("Another hand?",console=c) 
+        if not play_again:
+            c.clear()
+            c.print("Thank you for playing Blackjack with me!")
+            break
+        else: 
+            c.clear()

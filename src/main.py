@@ -3,6 +3,8 @@ import sys
 import time
 from blackjack import run_game as run_black_jack
 from highlow import run_game as run_high_low
+from rich.prompt import Prompt
+from console import console as c
 
 def print_delay(message="", delay=0, line_end="\n"):
     print(message, end=line_end)
@@ -11,6 +13,7 @@ def print_delay(message="", delay=0, line_end="\n"):
 
 """Application entry point"""
 def main():
+    c.clear()
     #todo splash screen
     #todo game select
     skip_intro = False
@@ -29,24 +32,18 @@ We can play:
 
  ( 2 ) Blackjack:  The classic game where you try to make a hand as close to 21 without going over
 
- Your choice! (the number next to the game): """
+ Your choice! """
 
-    while True:
-        selection = input(game_instructions)
-        try:
-            selection = int(selection)
-        except ValueError:
-            print("Sorry, but I only know what I know.", end="\n\n")
-            continue
-        break
+    selection = Prompt.ask(game_instructions, console=c, choices=["1","2"], show_choices=True)
+    c.clear()
 
     #Run main game loop
     match(selection):
-        case 1:
-            print_delay("High - Low! A simple and fun choice!", 2)
+        case "1":
+            print_delay("High - Low!  Simple and fun!", 2)
             run_high_low()
-        case 2:
-            print_delay("Blackjack!  I do love the classics!", 2)
+        case "2":
+            print_delay("Blackjack!  A classic!", 2)
             run_black_jack()
-    print("Thank you for playing!")
+    print("Goodbye!")
 main()
