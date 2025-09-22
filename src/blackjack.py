@@ -59,11 +59,8 @@ def run_game():
             dealer_wager = dealer.credits
 
         # Finalize Bet phase
-        print(f"player wagers {player_wager}")
         pot += player.take_credits(player_wager)
-        print(f"dealer meets {dealer_wager}")
         pot += dealer.take_credits(dealer_wager)
-
 
         #Deal phase
         #Alternate drawing cards for the player and the dealer
@@ -125,9 +122,11 @@ def run_game():
             nonlocal round_count
             nonlocal player_panel
             nonlocal dealer_panel
+            nonlocal pot
             player_hand_value = get_hand_value(player_hand)
             dealer_hand_value = get_hand_value(dealer_hand)
-            stats = f"Player Hand: {player_hand_value}\nDealer Hand: {dealer_hand_value}"
+
+            stats = f"Player Hand: {player_hand_value}\nDealer Hand: {dealer_hand_value}\nCurrent Bet: {player_wager}\nPot: {pot}"
             stats_panel = Panel(Text(stats), title=f"Game {round_count}")
 
             table_grid = Table.grid(expand=True)
