@@ -14,8 +14,7 @@ def print_delay(message="", delay=0, line_end="\n"):
 """Application entry point"""
 def main():
     c.clear()
-    #todo splash screen
-    #todo game select
+    game_play = True
     skip_intro = False
     if len(sys.argv) > 1:
         skip_intro = not(sys.argv[1] == None)
@@ -25,25 +24,32 @@ def main():
         print_delay("but it's no fun alone.", 3, "\n\n")
         print_delay("Would you enjoy a game with me?", 3)
     
-    game_instructions = """
-We can play:
+    while game_play:
 
- ( 1 ) High - Low:  Place a bet your card will be higher or lower than the dealer's card 
+        game_instructions = """
+    We can play:
 
- ( 2 ) Blackjack:  The classic game where you try to make a hand as close to 21 without going over
+     ( 1 ) High - Low:  Place a bet your card will be higher or lower than the dealer's card 
 
- Your choice! """
+     ( 2 ) Blackjack:  The classic game where you try to make a hand as close to 21 without going over
 
-    selection = Prompt.ask(game_instructions, console=c, choices=["1","2"], show_choices=True)
-    c.clear()
+     ( 3 ) End Game and Exit
 
-    #Run main game loop
-    match(selection):
-        case "1":
-            print_delay("High - Low!  Simple and fun!", 2)
-            run_high_low()
-        case "2":
-            print_delay("Blackjack!  A classic!", 2)
-            run_black_jack()
+     Your choice! """
+
+        selection = Prompt.ask(game_instructions, console=c, choices=["1","2","3"], show_choices=True)
+        c.clear()
+
+        #Run main game loop
+        match(selection):
+            case "1":
+                print_delay("High - Low!  Simple and fun!", 2)
+                game_play = run_high_low()
+                c.clear()
+            case "2":
+                print_delay("Blackjack!  A classic!", 2)
+                game_play = run_black_jack()
+            case "3":
+                break
     print("Goodbye!")
 main()

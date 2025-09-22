@@ -172,3 +172,4 @@ def run_game():
             deck = discard_pile.deal(52)
             print(f"{deck.size} cards returned from discard pile.")
         print("-----------------------------")
+    return True

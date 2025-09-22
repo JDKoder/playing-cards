@@ -257,3 +257,4 @@ def run_game():
             break
         else: 
             c.clear()
+    return True
