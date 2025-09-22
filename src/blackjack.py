@@ -25,6 +25,24 @@ def run_game():
     player = Player(player_hand, 10)
     dealer = Player(dealer_hand, 1000)
 
+    def reset_game():
+        """In a game over state, this function provides a way to reset the game state to keep playing."""
+        c.clear()
+        nonlocal round_count
+        nonlocal deck
+        nonlocal player_hand
+        nonlocal discard_pile
+        nonlocal player
+        nonlocal dealer
+        nonlocal dealer_hand
+        round_count = 0
+        deck = pd.Deck(rebuild=False, re_shuffle=True)
+        player_hand = pd.Stack()
+        dealer_hand = pd.Stack()
+        discard_pile = pd.Stack()
+        player = Player(player_hand, 10)
+        dealer = Player(dealer_hand, 1000)
+
     #for i in range(26):
     while True:
         #Shuffle phase
@@ -137,11 +155,10 @@ def run_game():
             c.clear()
             c.print(table_grid)
 
+        """Player Hit or Stay"""
         while True:
             update_ui(player_hand, [dealer_hand.cards[0]])
 
-            #Hit or Stay
-            #TODO IMPLEMENT HIT STAY LOOP
             hit_choices = ["hit", "h"]
             stay_choices = ["stay", "s"]
             hit_stay_choices = hit_choices.append(stay_choices)
@@ -164,16 +181,27 @@ def run_game():
                 update_ui(player_hand, dealer_hand)
                 break
 
-        dealer_hand_value = get_hand_value(dealer_hand)
-        player_hand_value = get_hand_value(player_hand)
-        #Dealer draws to at least 16 while they are losing to the player.
-        while dealer_hand_value < 16 and player_hand_value > dealer_hand_value and player_hand_value <= 21:
+
+        """
+        Dealer AI
+        Dealer draws to at least 16 while they are losing to the player.  
+        If the hands are even, the dealer will push unless their own hand value is less than 11,
+        guaranteeing them the win if they hit.
+        """
+        def ai_hit(dealer_hand_value, player_hand_value):
+            absolute_hit = dealer_hand_value < 11
+            conditional_hit = dealer_hand_value < 16 and player_hand_value > dealer_hand_value and player_hand_value <= 21
+            return absolute_hit or conditional_hit
+
+        while ai_hit(get_hand_value(dealer_hand), get_hand_value(player_hand)):
             c.print("Dealer hits")
             dealer_hand += deck.deal(1)
             c.print(f"Dealer draws the {dealer_hand[len(dealer_hand)-1]}")
-            dealer_hand_value = get_hand_value(dealer_hand)
             update_panels(False)
             update_ui(player_hand, dealer_hand)
+
+        dealer_hand_value = get_hand_value(dealer_hand)
+        player_hand_value = get_hand_value(player_hand)
 
         #Check win conditions
         player_over = player_hand_value > 21
@@ -194,6 +222,10 @@ def run_game():
             dealer.credits += pot
 
 
+        def escape_message():
+            c.clear()
+            c.print("Thank you for playing Blackjack with me!")
+
         #Can Play Again?
         print(f"Player's remaining credits: {player.credits}")
         if player.credits < 10 or dealer.credits < 10:
@@ -202,7 +234,14 @@ def run_game():
                 c.print("[bold yellow on black]Player Takes the House![/bold yellow on black]")
             else:
                 c.print("[bold white on red]You're broke!  Game Over[/bold white on red]")
-            break
+            restart_game = Confirm.ask("Do you want to play again?")
+            if restart_game:
+                reset_game()
+                c.clear()
+                continue
+            else:
+                escape_message()
+                break
         else:
             print(f"Player discards {len(player_hand)} cards from hand")
             discard_pile += player_hand.deal(len(player_hand))
@@ -214,8 +253,7 @@ def run_game():
             print(f"{deck.size} cards ready for the next game.")
         play_again = Confirm.ask("Another hand?",console=c) 
         if not play_again:
-            c.clear()
-            c.print("Thank you for playing Blackjack with me!")
+            escape_message()
             break
         else: 
             c.clear()
