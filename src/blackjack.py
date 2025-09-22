@@ -15,6 +15,7 @@ from rich.prompt import Prompt
 
 """This is the blackjack game"""
 def run_game():
+    c.clear()
     #initialize game variables
     round_count = 0
     deck = pd.Deck(rebuild=False, re_shuffle=True)
@@ -134,6 +135,7 @@ def run_game():
             table_grid.add_column()
             table_grid.add_column()
             table_grid.add_row(player_panel, dealer_panel, stats_panel)
+            c.clear()
             c.print(table_grid)
 
         while True:
@@ -149,11 +151,13 @@ def run_game():
             if command.lower() in hit_choices:
                 player_hand += deck.deal(1)
                 c.print(f"Player draws the {player_hand[len(player_hand)-1]}")
-                update_panels(True)
                 if get_hand_value(player_hand) > 21:
                 # Player loses
+                    update_panels(False)
+                    update_ui(player_hand, dealer_hand)
                     c.print("Hand is more than 21!")
                     break
+                update_panels(True)
             elif command.lower() in stay_choices:
                 update_panels(False)
                 c.print("Player stays")
