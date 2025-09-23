@@ -1,6 +1,6 @@
 # Playing Cards
 
-Playing Cards is a pet project for bringing playing cards to the terminal.  
+Playing Cards is a game about... Playing card games.  The game prompts you for what you'd like to play, and will play with you until your finished.  
 
 # Choice of Games
 
