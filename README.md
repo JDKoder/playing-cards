@@ -11,7 +11,7 @@ Instructions for games in the docs folder
 
 # Requirements
 
-* Python 3.8.0 or above
+* [Python](https://www.python.org/downloads) 3.8.0 or above
 * [UV](https://docs.astral.sh/uv/getting-started/installation/) (A versatile python project manager that will pull down the dependencies needed to run the game)
 * Terminal (emulator) that supports Nerd Fonts and True Color
 * A [Nerd Font](http://nerdfonts.com) installed and configured in your terminal.
