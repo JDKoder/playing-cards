@@ -26,5 +26,5 @@ Win/PC or Alternatively
 
 # Credits
 This game is developed by myself JDKoder using several open source libraries.  
-Thank you to [Pydealer](https://github.com/Trebek/pydealer) which as far as I know is unsupported since 2015, but it provided a nice jumpoff for shuffling and coparing ranks and suits.  
+Thank you to [Pydealer](https://github.com/Trebek/pydealer) which as far as I know is unsupported since 2015, but it provided a nice jumpoff for shuffling and comparing ranks and suits.  
 Thank you to [Textualize/rich](https://github.com/Textualize/rich) for en"rich"ing *cough* the console experience.
