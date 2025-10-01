@@ -1,3 +1,5 @@
+from pydealer import Stack
+
 class Player():
 
     def __init__(self, hand=[], credits=0):
@@ -17,7 +19,12 @@ class Player():
     def award_credits(self, amount):
         self.credits += amount
 
+    """Adds a card to the top of the given players hand."""
     def add_card_to_hand(self, card):
-        self.hand.append(card)
+        if type(self.hand) is Stack:
+            self.hand.add(card)
+        else:
+            self.hand.append(card)
+
 
 
