@@ -9,10 +9,21 @@ from card_rich import (convert_rich_cards_to_grid,
                             RICH_CARD_FACE)
 from console import console as c
 from rich import print
+from rich.prompt import Confirm
 
 
 BET_HIGH = "high"
 BET_LOW = "low"
+
+def convert_card_to_tuple(card, hidden=False):
+    card_tuple = (card.value, card.suit, hidden)
+    return card_tuple
+
+def show_hand(hand):
+    converted_cards = []
+    for i in range(hand.size):
+        converted_cards.append(convert_card_to_tuple(hand[i]))
+    print_cards(converted_cards)
 
 """This is the high low game"""
 def run_game():
@@ -23,8 +34,23 @@ def run_game():
     discard_pile = pd.Stack()
     player = Player(player_hand, 10)
     dealer = Player(dealer_hand, 1000)
+    def reset_game():
+        """In a game over state, this function provides a way to reset the game state to keep playing."""
+        c.clear()
+        nonlocal round_count
+        nonlocal deck
+        nonlocal player_hand
+        nonlocal discard_pile
+        nonlocal player
+        nonlocal dealer
+        nonlocal dealer_hand
+        round_count = 0
+        player_hand = pd.Stack()
+        dealer_hand = pd.Stack()
+        discard_pile = pd.Stack()
+        player = Player(player_hand, 10)
+        dealer = Player(dealer_hand, 1000)
 
-    #for i in range(26):
     while True:
         #Shuffle phase
         deck = pd.Deck(rebuild=False, re_shuffle=True)
@@ -45,16 +71,6 @@ def run_game():
         #draw a card for the player
         player_hand = deck.deal(1)
         print(f"Players card is {player_hand[0]}")
-
-        def convert_card_to_tuple(card, hidden=False):
-            card_tuple = (card.value, card.suit, hidden)
-            return card_tuple
-        
-        def show_hand(hand):
-            converted_cards = []
-            for i in range(hand.size):
-                converted_cards.append(convert_card_to_tuple(hand[i]))
-            print_cards(converted_cards)
 
         #player_card_tuple = convert_card_to_tuple(player_hand.cards[0])
         #print_cards([player_card_tuple])
@@ -115,6 +131,7 @@ def run_game():
                     continue
             player_is_dur_dur_dur = False
 
+        c.clear()
         print(f"Player's bet is {player_bet}")
         print(f"The Ace Standard Coin value is revealed: {ace_standard_coin}")
         print(f"Dealer shows their hand")
@@ -152,24 +169,28 @@ def run_game():
             print(f"Player loses! {player_hand[0].value} is {str_val} than {dealer_hand[0].value}")
             dealer.award_credits(pot)
 
+        #Are we at a game over state?
         print(f"Player's remaining credits: {player.credits}")
         if player.credits < 10 or dealer.credits < 10:
             print(f"Not enough credits to play again.")
             if player.credits >= 10:
-                print("Player Takes the House!")
+                c.print("[bold yellow on black]Player Takes the House![/bold yellow on black]")
             else:
-                print("You're broke!  Game Over")
-            break
+                c.print("[bold white on red]You're broke!  Game Over[/bold white on red]")
+            restart_game = Confirm.ask("Do you want to play again?")
+            if restart_game:
+                reset_game()
+                c.clear()
+                continue
+            else:
+                c.clear()
+                break
 
-        print("Player discards hand")
-        discard_pile += player_hand.deal(1)
-        print("Dealer discards hand")
-        discard_pile += dealer_hand.deal(1)
-        print(f"Discard Pile Size {discard_pile.size}")
-        if discard_pile.size >= 52:
-            print("Last card has been played.  Returning the discard pile to main deck.")
-            discard_pile.shuffle()
-            deck = discard_pile.deal(52)
-            print(f"{deck.size} cards returned from discard pile.")
-        print("-----------------------------")
+        play_again = Confirm.ask("Another round?",console=c) 
+        if not play_again:
+            c.clear()
+            break
+        else:
+            c.clear()
+
     return True
